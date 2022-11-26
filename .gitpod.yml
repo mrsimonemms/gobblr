@@ -1,0 +1,38 @@
+tasks:
+  - before: |
+      curl -sfL gpm.simonemms.com | bash
+
+      gpm install pre-commit
+    init: |
+      go install github.com/spf13/cobra-cli@latest
+      go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      go install github.com/kisielk/errcheck@latest
+      go install mvdan.cc/gofumpt@latest
+      go install honnef.co/go/tools/cmd/staticcheck@latest
+      go install golang.org/x/tools/cmd/goimports@latest
+
+      go install ./...
+    command: |
+      # Copy .cobra.yaml to $HOME
+      cp .cobra.yaml $HOME/.cobra.yaml
+
+      export GIT_REPO="${GITPOD_WORKSPACE_CONTEXT_URL/https:\/\//}"
+      export PROJECT_NAME="${GIT_REPO##*/}"
+
+      if [ ! -f "go.mod" ]; then
+        echo "Creating Go module"
+        go mod init "$GIT_REPO"
+      fi
+      if [ ! -f "main.go" ]; then
+        echo "Create Cobra project"
+        cobra-cli init
+        go mod tidy
+      fi
+
+      pre-commit install --install-hooks
+
+vscode:
+  extensions:
+    - donjayamanne.git-extension-pack
+    - EditorConfig.EditorConfig
+    - golang.go
