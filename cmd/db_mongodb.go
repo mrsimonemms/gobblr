@@ -13,10 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
+package cmd
 
-import "github.com/mrsimonemms/gobblr/cmd"
+import (
+	"github.com/spf13/cobra"
+)
 
-func main() {
-	cmd.Execute()
+// dbMongodbCmd represents the mongodb command
+var dbMongodbCmd = &cobra.Command{
+	Use:   "mongodb",
+	Short: "MongoDB ingestion commands",
+}
+
+func init() {
+	dbCmd.AddCommand(dbMongodbCmd)
 }
