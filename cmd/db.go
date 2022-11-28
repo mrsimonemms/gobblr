@@ -16,15 +16,44 @@ limitations under the License.
 package cmd
 
 import (
+	"os"
+	"path"
+
+	"github.com/mrsimonemms/gobblr/pkg/drivers"
+	"github.com/mrsimonemms/gobblr/pkg/gobblr"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+var dbOpts struct {
+	DataPath string
+	Driver   drivers.Driver
+}
 
 // dbCmd represents the db command
 var dbCmd = &cobra.Command{
 	Use:   "db",
 	Short: "Control the dataset in your database",
+	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+		// Use a persistent post run command as each of the subcommands is there
+		// to create the configure only. The execution happens here.
+		//
+		// There can be only one PersistentPostRun command.
+
+		// @todo(sje): log number of items inserted
+		_, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+
+		return err
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(dbCmd)
+
+	currentPath, err := os.Getwd()
+	cobra.CheckErr(err)
+
+	viper.SetDefault("path", path.Join(currentPath, "data"))
+	dbCmd.PersistentFlags().StringVar(&dbOpts.DataPath, "path", viper.GetString("path"), "location of the data files")
 }
