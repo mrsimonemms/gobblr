@@ -59,3 +59,8 @@ vscode:
     - donjayamanne.git-extension-pack
     - EditorConfig.EditorConfig
     - golang.go
+
+ports:
+  - port: 3306
+    name: MySQL
+    visibility: private
