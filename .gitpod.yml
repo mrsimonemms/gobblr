@@ -1,5 +1,8 @@
 tasks:
   - name: MySQL
+    env:
+      DB_CONNECTION: "root:password@tcp(localhost:3306)/gobblr"
+      DB_TYPE: mysql
     command: |
       docker run \
         -e MYSQL_ROOT_PASSWORD=password \
@@ -7,7 +10,11 @@ tasks:
         --rm \
         -p 3306:3306 \
         --name mysql \
-        mysql
+        mysql &
+
+      sleep 10
+
+      (cd ./examples/simple/migrations && go run .)
 
   - name: MongoDB
     command: |
