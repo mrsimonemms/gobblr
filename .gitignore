@@ -8,3 +8,4 @@ node_modules
 Thumbs.db
 
 /gobblr
+/examples/simple/migrations/simple
