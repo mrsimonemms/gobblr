@@ -1,5 +1,15 @@
 tasks:
+  - name: Build migration program
+    init: |
+      cd ./examples/simple/migrations
+      go build .
+    command: |
+      exit 0
+
   - name: MySQL
+    env:
+      DB_CONNECTION: "root:password@tcp(localhost:3306)/gobblr"
+      DB_TYPE: mysql
     command: |
       docker run \
         -e MYSQL_ROOT_PASSWORD=password \
@@ -7,7 +17,9 @@ tasks:
         --rm \
         -p 3306:3306 \
         --name mysql \
-        mysql
+        mysql &
+
+      ./examples/simple/migrations/simple
 
   - name: MongoDB
     command: |
