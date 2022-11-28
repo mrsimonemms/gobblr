@@ -1,4 +1,31 @@
 tasks:
+  - name: MySQL
+    command: |
+      docker run \
+        -e MYSQL_ROOT_PASSWORD=password \
+        -e MYSQL_DATABASE=gobblr \
+        --rm \
+        -p 3306:3306 \
+        --name mysql \
+        mysql
+
+  - name: MongoDB
+    command: |
+      docker run \
+        --rm \
+        -p 27017:27017 \
+        --name mongodb \
+        mongo
+
+  - name: PostgreSQL
+    command: |
+      docker run \
+        -e POSTGRES_PASSWORD=password \
+        --rm \
+        -p 5432:5432 \
+        --name pgsql \
+        postgres
+
   - before: |
       curl -sfL gpm.simonemms.com | bash
 
