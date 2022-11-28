@@ -3,6 +3,7 @@ module github.com/mrsimonemms/gobblr
 go 1.19
 
 require (
+	github.com/relvacode/iso8601 v1.1.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.14.0
 	gorm.io/driver/mysql v1.4.4
