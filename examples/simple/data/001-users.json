@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "createdKey": "created_at",
+    "updatedKey": "updated_at"
+  },
+  "data": [
+    {
+      "registered": true,
+      "confirmed": true,
+      "username": "test1",
+      "email_address": "test@test.com",
+      "name": "Test Testington",
+      "password": "13905934cb5503269ca5613b72a8aa8a:57a1846d12716308be489ec25f2a017e22aba88d591f5c5184e046cb42ec921f1ac5f5249b212efe5c8a644d45d7c63d3ee075cce79ba3a663c731971a56f4c3"
+    }
+  ]
+}
