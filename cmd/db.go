@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path"
 
@@ -41,10 +42,16 @@ var dbCmd = &cobra.Command{
 		//
 		// There can be only one PersistentPostRun command.
 
-		// @todo(sje): log number of items inserted
-		_, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+		if err != nil {
+			return err
+		}
 
-		return err
+		for k, v := range inserted {
+			fmt.Printf("%s: %d record(s)\n", k, v)
+		}
+
+		return nil
 	},
 }
 
