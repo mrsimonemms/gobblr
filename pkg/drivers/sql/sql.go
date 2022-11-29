@@ -1,6 +1,8 @@
 package sql
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -33,9 +35,19 @@ func (db *SQL) Close() error {
 }
 
 func (db *SQL) InsertBulk(table string, data []map[string]interface{}) (int, error) {
+	result := db.activeConnection.Table(table).CreateInBatches(data, 100)
+	if err := result.Error; err != nil {
+		return 0, err
+	}
 	return len(data), nil
 }
 
 func (db *SQL) Truncate(table string) error {
+	rows, err := db.activeConnection.Raw(fmt.Sprintf("TRUNCATE TABLE %s", table)).Rows()
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
 	return nil
 }
