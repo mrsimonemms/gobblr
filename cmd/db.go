@@ -16,6 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 
@@ -41,10 +43,18 @@ var dbCmd = &cobra.Command{
 		//
 		// There can be only one PersistentPostRun command.
 
-		// @todo(sje): log number of items inserted
-		_, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+		if err != nil {
+			return err
+		}
 
-		return err
+		jsonData, err := json.MarshalIndent(inserted, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(jsonData))
+
+		return nil
 	},
 }
 

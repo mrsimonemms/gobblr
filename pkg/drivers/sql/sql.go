@@ -35,9 +35,19 @@ func (db *SQL) Close() error {
 }
 
 func (db *SQL) InsertBulk(table string, data []map[string]interface{}) (int, error) {
+	result := db.activeConnection.Table(table).CreateInBatches(data, 100)
+	if err := result.Error; err != nil {
+		return 0, err
+	}
 	return len(data), nil
 }
 
 func (db *SQL) Truncate(table string) error {
-	return nil
+	// Gorm doesn't have a truncate method - this will not reset the "id" field
+	result := db.activeConnection.
+		Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Table(table).
+		Delete("")
+
+	return result.Error
 }
