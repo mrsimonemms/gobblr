@@ -44,6 +44,14 @@ tasks:
 
       ./examples/simple/migrations/simple
 
+  - name: SQLite
+    env:
+      DB_TYPE: sqlite
+    command: |
+      export DB_CONNECTION="$GITPOD_REPO_ROOT/sqlite.db"
+
+      ./examples/simple/migrations/simple
+
   - before: |
       curl -sfL gpm.simonemms.com | bash
 
