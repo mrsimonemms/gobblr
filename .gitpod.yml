@@ -30,13 +30,19 @@ tasks:
         mongo
 
   - name: PostgreSQL
+    env:
+      DB_CONNECTION: "user=postgres password=password host=localhost port=5432 dbname=gobblr"
+      DB_TYPE: postgres
     command: |
       docker run \
         -e POSTGRES_PASSWORD=password \
+        -e POSTGRES_DB=gobblr \
         --rm \
         -p 5432:5432 \
         --name pgsql \
-        postgres
+        postgres &
+
+      ./examples/simple/migrations/simple
 
   - before: |
       curl -sfL gpm.simonemms.com | bash
@@ -70,13 +76,20 @@ tasks:
 
       pre-commit install --install-hooks
 
+ports:
+  - port: 3306
+    name: MySQL
+    visibility: private
+
+  - port: 5432
+    name: PostgreSQL
+    visibility: private
+
+  - port: 27017
+    visibility: private
+
 vscode:
   extensions:
     - donjayamanne.git-extension-pack
     - EditorConfig.EditorConfig
     - golang.go
-
-ports:
-  - port: 3306
-    name: MySQL
-    visibility: private
