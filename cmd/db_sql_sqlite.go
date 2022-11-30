@@ -16,15 +16,27 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/mrsimonemms/gobblr/pkg/drivers/sql"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+var dbSqlSqliteOpts struct {
+	File string
+}
 
 // dbSqlSqliteCmd represents the sqlite command
 var dbSqlSqliteCmd = &cobra.Command{
 	Use:   "sqlite",
 	Short: "SQLite ingestion commands",
+	Run: func(cmd *cobra.Command, args []string) {
+		dbOpts.Driver = sql.SQLite(dbSqlSqliteOpts.File)
+	},
 }
 
 func init() {
 	dbSqlCmd.AddCommand(dbSqlSqliteCmd)
+
+	viper.SetDefault("file", "sqlite.db")
+	dbSqlSqliteCmd.Flags().StringVarP(&dbSqlSqliteOpts.File, "file", "f", viper.GetString("file"), "SQLite database file")
 }
