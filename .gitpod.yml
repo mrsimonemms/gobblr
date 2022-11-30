@@ -41,6 +41,13 @@ tasks:
 
       (cd ./examples/simple/migrations && go run .)
 
+  - name: SQLite
+    env:
+      DB_CONNECTION: "$GITPOD_REPO_ROOT/sqlite.db"
+      DB_TYPE: sqlite
+    command: |
+      (cd ./examples/simple/migrations && go run .)
+
   - before: |
       curl -sfL gpm.simonemms.com | bash
 

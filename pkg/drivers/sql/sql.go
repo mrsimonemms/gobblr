@@ -43,10 +43,19 @@ func (db *SQL) InsertBulk(table string, data []map[string]interface{}) (int, err
 }
 
 func (db *SQL) Truncate(table string) error {
-	rows, err := db.activeConnection.Raw(fmt.Sprintf("TRUNCATE TABLE %s", table)).Rows()
+	var sql string
+	switch db.activeConnection.Name() {
+	case "sqlite":
+		sql = fmt.Sprintf("DELETE FROM %s", table)
+	default:
+		sql = fmt.Sprintf("TRUNCATE TABLE %s", table)
+	}
+
+	rows, err := db.activeConnection.Raw(sql).Rows()
 	if err != nil {
 		return err
 	}
+
 	defer rows.Close()
 
 	return nil
