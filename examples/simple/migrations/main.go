@@ -11,6 +11,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -45,6 +46,8 @@ func main() {
 	switch dbType {
 	case "mysql":
 		dialector = mysql.Open(connection)
+	case "postgres":
+		dialector = postgres.Open(connection)
 	default:
 		panic(fmt.Errorf("unknown db type: %s", dbType))
 	}
