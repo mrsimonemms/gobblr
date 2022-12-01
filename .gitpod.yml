@@ -52,6 +52,21 @@ tasks:
 
       ./examples/simple/migrations/simple
 
+  - name: SQL Server
+    env:
+      DB_CONNECTION: "sqlserver://sa:Pa55w0rd@localhost:1433"
+      DB_TYPE: sqlserver
+    command: |
+      docker run \
+        -e "ACCEPT_EULA=Y" \
+        -e "MSSQL_SA_PASSWORD=Pa55w0rd" \
+        --rm \
+        -p 1433:1433 \
+        --name sqlserver \
+        mcr.microsoft.com/mssql/server:2022-latest &
+
+      ./examples/simple/migrations/simple
+
   - before: |
       curl -sfL gpm.simonemms.com | bash
 
@@ -85,6 +100,9 @@ tasks:
       fi
 
 ports:
+  - port: 1443
+    visibility: private
+
   - port: 3306
     visibility: private
 
