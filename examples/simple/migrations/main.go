@@ -13,6 +13,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
+	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )
 
@@ -51,6 +52,8 @@ func main() {
 		dialector = postgres.Open(connection)
 	case "sqlite":
 		dialector = sqlite.Open(connection)
+	case "sqlserver":
+		dialector = sqlserver.Open(connection)
 	default:
 		panic(fmt.Errorf("unknown db type: %s", dbType))
 	}
