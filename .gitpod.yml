@@ -85,6 +85,10 @@ tasks:
       fi
 
 ports:
+  - port: 1443
+    name: SQL server
+    visibility: private
+
   - port: 3306
     name: MySQL
     visibility: private
