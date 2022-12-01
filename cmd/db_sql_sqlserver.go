@@ -16,15 +16,43 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/mrsimonemms/gobblr/pkg/drivers/sql"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+var dbSqlSqlserverOpts struct {
+	Database string
+	Host     string
+	Password string
+	Port     int
+	User     string
+}
 
 // dbSqlSqlserverCmd represents the sqlserver command
 var dbSqlSqlserverCmd = &cobra.Command{
 	Use:   "sqlserver",
 	Short: "SQL server ingestion commands",
+	Run: func(cmd *cobra.Command, args []string) {
+		dbOpts.Driver = sql.SQLServer(
+			dbSqlSqlserverOpts.Database,
+			dbSqlSqlserverOpts.Host,
+			dbSqlSqlserverOpts.Password,
+			dbSqlSqlserverOpts.Port,
+			dbSqlSqlserverOpts.User,
+		)
+	},
 }
 
 func init() {
 	dbSqlCmd.AddCommand(dbSqlSqlserverCmd)
+
+	viper.SetDefault("host", "localhost")
+	viper.SetDefault("port", 1433)
+	viper.SetDefault("username", "sa")
+	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
+	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Host, "host", "H", viper.GetString("host"), "database host name")
+	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Password, "password", "p", viper.GetString("password"), "database password")
+	dbSqlSqlserverCmd.Flags().IntVarP(&dbSqlSqlserverOpts.Port, "port", "P", viper.GetInt("port"), "database port")
+	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.User, "username", "u", viper.GetString("username"), "database username")
 }
