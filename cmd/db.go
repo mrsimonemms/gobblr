@@ -29,9 +29,11 @@ import (
 )
 
 var dbOpts struct {
-	DataPath string
-	Driver   drivers.Driver
-	Retries  uint64
+	DataPath     string
+	Driver       drivers.Driver
+	Retries      uint64
+	RunWebServer bool
+	WebPort      int
 }
 
 // dbCmd represents the db command
@@ -47,6 +49,11 @@ var dbCmd = &cobra.Command{
 		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries)
 		if err != nil {
 			return err
+		}
+
+		if dbOpts.RunWebServer {
+			// Runs the execution as a server to make it easy to trigger it from integration tests etc
+			return gobblr.Serve(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries, dbOpts.WebPort)
 		}
 
 		jsonData, err := json.MarshalIndent(inserted, "", "  ")
@@ -67,6 +74,10 @@ func init() {
 
 	viper.SetDefault("path", path.Join(currentPath, "data"))
 	viper.SetDefault("retries", 0)
+	viper.SetDefault("run", false)
+	viper.SetDefault("run-port", 5670) // Default to a random, normally-unused port
 	dbCmd.PersistentFlags().StringVar(&dbOpts.DataPath, "path", viper.GetString("path"), "location of the data files")
 	dbCmd.PersistentFlags().Uint64Var(&dbOpts.Retries, "retries", viper.GetUint64("retries"), "number of retries before declaring a failure")
+	dbCmd.PersistentFlags().BoolVar(&dbOpts.RunWebServer, "run", viper.GetBool("run"), "run as a web server")
+	dbCmd.PersistentFlags().IntVar(&dbOpts.WebPort, "run-port", viper.GetInt("run-port"), "port for web server to listen on")
 }
