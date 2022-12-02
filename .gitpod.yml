@@ -94,6 +94,7 @@ ports:
     visibility: private
 
   - port: 27017
+    name: MongoDB
     visibility: private
 
 vscode:
