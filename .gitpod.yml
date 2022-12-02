@@ -93,6 +93,10 @@ ports:
     name: PostgreSQL
     visibility: private
 
+  - port: 5670
+    name: Gobblr web server
+    visibility: private
+
   - port: 27017
     name: MongoDB
     visibility: private
