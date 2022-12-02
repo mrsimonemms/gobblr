@@ -3,10 +3,20 @@ package gobblr
 import (
 	"fmt"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
 )
 
-func Execute(dataPath string, db drivers.Driver) (map[string]int, error) {
+func Execute(dataPath string, db drivers.Driver, retries uint64) (map[string]int, error) {
+	return backoff.RetryWithData(
+		func() (map[string]int, error) {
+			return retryExecute(dataPath, db)
+		},
+		backoff.WithMaxRetries(backoff.NewExponentialBackOff(), retries),
+	)
+}
+
+func retryExecute(dataPath string, db drivers.Driver) (map[string]int, error) {
 	inserted := make(map[string]int, 0)
 	var err error
 
