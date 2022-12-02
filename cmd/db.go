@@ -31,6 +31,7 @@ import (
 var dbOpts struct {
 	DataPath string
 	Driver   drivers.Driver
+	Retries  uint64
 }
 
 // dbCmd represents the db command
@@ -43,7 +44,7 @@ var dbCmd = &cobra.Command{
 		//
 		// There can be only one PersistentPostRun command.
 
-		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver)
+		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries)
 		if err != nil {
 			return err
 		}
@@ -65,5 +66,7 @@ func init() {
 	cobra.CheckErr(err)
 
 	viper.SetDefault("path", path.Join(currentPath, "data"))
+	viper.SetDefault("retries", 0)
 	dbCmd.PersistentFlags().StringVar(&dbOpts.DataPath, "path", viper.GetString("path"), "location of the data files")
+	dbCmd.PersistentFlags().Uint64Var(&dbOpts.Retries, "retries", viper.GetUint64("retries"), "number of retries before declaring a failure")
 }
