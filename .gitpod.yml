@@ -109,6 +109,10 @@ ports:
   - port: 5432
     visibility: private
 
+  - port: 5670
+    name: Gobblr web server
+    visibility: private
+
   - port: 27017
     visibility: private
 
