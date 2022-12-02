@@ -3,6 +3,7 @@ package gobblr
 import (
 	"fmt"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
 )
 
@@ -11,7 +12,16 @@ type Inserted struct {
 	Count int    `json:"count"`
 }
 
-func Execute(dataPath string, db drivers.Driver) ([]Inserted, error) {
+func Execute(dataPath string, db drivers.Driver, retries uint64) ([]Inserted, error) {
+	return backoff.RetryWithData(
+		func() ([]Inserted, error) {
+			return retryExecute(dataPath, db)
+		},
+		backoff.WithMaxRetries(backoff.NewExponentialBackOff(), retries),
+	)
+}
+
+func retryExecute(dataPath string, db drivers.Driver) ([]Inserted, error) {
 	inserted := make([]Inserted, 0)
 	var err error
 
