@@ -16,15 +16,32 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/mrsimonemms/gobblr/pkg/drivers/mongodb"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+var dbMongodbOpts struct {
+	Database string
+	ConnectionURI     string
+}
 
 // dbMongodbCmd represents the mongodb command
 var dbMongodbCmd = &cobra.Command{
 	Use:   "mongodb",
 	Short: "MongoDB ingestion commands",
+	Run: func(cmd *cobra.Command, args []string) {
+		dbOpts.Driver = mongodb.New(
+			dbMongodbOpts.ConnectionURI,
+			dbMongodbOpts.Database,
+		)
+	},
 }
 
 func init() {
 	dbCmd.AddCommand(dbMongodbCmd)
+
+	viper.SetDefault("connection-uri", "mongodb://localhost:27017")
+	dbMongodbCmd.Flags().StringVarP(&dbMongodbOpts.ConnectionURI, "connection-uri", "u", viper.GetString("connection-uri"), "database connection uri")
+	dbMongodbCmd.Flags().StringVarP(&dbMongodbOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
 }
