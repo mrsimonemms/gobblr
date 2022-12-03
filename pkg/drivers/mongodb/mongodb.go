@@ -43,6 +43,10 @@ func (db *MongoDB) Close() error {
 	return db.activeConnection.client.Disconnect(context.TODO())
 }
 
+func (db *MongoDB) DriverName() string {
+	return "mongodb"
+}
+
 func (db *MongoDB) InsertBulk(collection string, raw []map[string]interface{}) (int, error) {
 	var err error
 	data := make([]interface{}, 0)

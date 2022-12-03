@@ -34,6 +34,10 @@ func (db *SQL) Close() error {
 	return nil
 }
 
+func (db *SQL) DriverName() string {
+	return db.driver.Name()
+}
+
 func (db *SQL) InsertBulk(table string, data []map[string]interface{}) (int, error) {
 	result := db.activeConnection.Table(table).CreateInBatches(data, 100)
 	if err := result.Error; err != nil {
