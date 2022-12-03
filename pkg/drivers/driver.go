@@ -12,6 +12,9 @@ type Driver interface {
 	// Close the database connection and free up resources
 	Close() error
 
+	// Name of the driver
+	DriverName() string
+
 	// Insert data in bulk
 	InsertBulk(table string, data []map[string]interface{}) (inserted int, err error)
 

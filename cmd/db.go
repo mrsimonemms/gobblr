@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -25,6 +24,7 @@ import (
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
 	"github.com/mrsimonemms/gobblr/pkg/gobblr"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -47,6 +47,12 @@ var dbCmd = &cobra.Command{
 		//
 		// There can be only one PersistentPostRun command.
 
+		log.Debug().
+			Str("data path", dbOpts.DataPath).
+			Str("driver", dbOpts.Driver.DriverName()).
+			Int("retries", int(dbOpts.Retries)).
+			Msg("Ingesting data into database")
+
 		inserted, err := gobblr.Execute(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries)
 		if err != nil {
 			return err
@@ -57,11 +63,9 @@ var dbCmd = &cobra.Command{
 			return gobblr.Serve(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries, dbOpts.WebPort)
 		}
 
-		jsonData, err := json.MarshalIndent(inserted, "", "  ")
-		if err != nil {
-			return err
-		}
-		fmt.Println(string(jsonData))
+		log.Info().Fields(map[string]interface{}{
+			"inserted": inserted,
+		}).Msg("Successfully inserted data")
 
 		return nil
 	},

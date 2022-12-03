@@ -5,7 +5,11 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
+
+var logger *zerolog.Logger = &log.Logger
 
 type Inserted struct {
 	Table string `json:"table"`
@@ -13,8 +17,11 @@ type Inserted struct {
 }
 
 func Execute(dataPath string, db drivers.Driver, retries uint64) ([]Inserted, error) {
+	attempt := 0
 	return backoff.RetryWithData(
 		func() ([]Inserted, error) {
+			logger.Debug().Int("attempt", attempt).Msg("Attempting to gobble data")
+
 			return retryExecute(dataPath, db)
 		},
 		backoff.WithMaxRetries(backoff.NewExponentialBackOff(), retries),
@@ -25,21 +32,28 @@ func retryExecute(dataPath string, db drivers.Driver) ([]Inserted, error) {
 	inserted := make([]Inserted, 0)
 	var err error
 
+	logCtx := (&log.Logger).With().Str("dbType", db.DriverName()).Logger()
+
 	// Connect to database
+	logCtx.Debug().Msg("Authenticating database")
 	if err := db.Auth(); err != nil {
+		logCtx.Error().Err(err).Msg("Failed to connect to database")
 		return nil, err
 	}
 
 	// We've finished - let's clear up after ourselves
 	defer func() {
+		logCtx.Debug().Msg("Closing database connection")
 		err = db.Close()
 	}()
 
 	// Find the files
 	files, err := FindFiles(dataPath)
 	if err != nil {
+		logCtx.Error().Err(err).Msg("Failed to connect to database")
 		return nil, err
 	}
+	logCtx.Debug().Str("path", dataPath).Int("count", len(files)).Msg("Found files to ingest")
 
 	// Iterate over each file, delete and then ingest data
 	for _, file := range files {

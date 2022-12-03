@@ -6,10 +6,11 @@ import (
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	logger "github.com/mrsimonemms/gin-structured-logger"
+	gsl "github.com/mrsimonemms/gin-structured-logger"
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
-	"github.com/rs/zerolog/log"
 )
+
+var runCount = 0
 
 func Serve(dataPath string, db drivers.Driver, retries uint64, port int) error {
 	gin.SetMode(gin.ReleaseMode)
@@ -17,10 +18,10 @@ func Serve(dataPath string, db drivers.Driver, retries uint64, port int) error {
 	r := gin.New()
 	r.Use(
 		requestid.New(),
-		logger.New(),
+		gsl.New(),
 		gin.Recovery(),
 		func(ctx *gin.Context) {
-			logger.Get(ctx).Debug().Str("path", ctx.Request.URL.Path).Msg("New HTTP call")
+			gsl.Get(ctx).Debug().Str("path", ctx.Request.URL.Path).Msg("New HTTP call")
 		},
 	)
 
@@ -33,7 +34,7 @@ func Serve(dataPath string, db drivers.Driver, retries uint64, port int) error {
 	// Register the routes
 	r.POST("/data/reset", h.ResetData)
 
-	(&log.Logger).Info().Int("port", port).Msg("Starting web server")
+	logger.Info().Int("port", port).Msg("Starting web server")
 
 	return r.Run(fmt.Sprintf(":%d", port))
 }
@@ -46,7 +47,10 @@ type handler struct {
 
 // ResetData runs the Execute command whenever it receives a call
 func (h handler) ResetData(c *gin.Context) {
-	log := logger.Get(c).With().Logger()
+	// Increment the run count
+	runCount++
+
+	log := gsl.Get(c).With().Logger()
 
 	inserted, err := Execute(h.DataPath, h.Driver, h.Retries)
 	if err != nil {
@@ -63,7 +67,7 @@ func (h handler) ResetData(c *gin.Context) {
 	// Log the result
 	log.Info().Fields(map[string]interface{}{
 		"inserted": inserted,
-	}).Msg("Successfully inserted data")
+	}).Int("run count", runCount).Msg("Successfully inserted data")
 
 	c.JSON(http.StatusOK, inserted)
 }

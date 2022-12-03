@@ -19,16 +19,29 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile  string
+	logLevel string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gobblr",
 	Short: "Easily ingest test data into your development stack",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if level, err := zerolog.ParseLevel(logLevel); err != nil {
+			return err
+		} else {
+			zerolog.SetGlobalLevel(level)
+		}
+
+		return nil
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -43,7 +56,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	bindEnv("log-level")
+
+	viper.SetDefault("log-level", "info")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gobblr.yaml)")
+	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", viper.GetString("log-level"), `log level - "trace", "debug", "info", "warn", "error", "fatal", "panic" or "disabled"`)
 }
 
 // initConfig reads in config file and ENV variables if set.
