@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.0
+	github.com/dop251/goja v0.0.0-20221118162653-d4bf6fde1b86
 	github.com/gin-contrib/requestid v0.0.6
 	github.com/gin-gonic/gin v1.8.1
 	github.com/mrsimonemms/gin-structured-logger v0.1.0
@@ -19,11 +20,13 @@ require (
 )
 
 require (
+	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
