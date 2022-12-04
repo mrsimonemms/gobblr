@@ -55,8 +55,9 @@ tasks:
   - before: |
       curl -sfL gpm.simonemms.com | bash
 
-      gpm install cobra-cli
+      gpm install cobra-cli goreleaser
     init: |
+
       go install ./...
     command: |
       # Install commitlint
