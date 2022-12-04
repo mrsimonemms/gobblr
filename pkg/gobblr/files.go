@@ -9,16 +9,20 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/dop251/goja"
 )
 
 type FileType string
 
 const (
 	FileTypeJSON FileType = "json"
+	FileTypeJS   FileType = "js"
 )
 
 var AllowedFileTypes = map[FileType]struct{}{
 	FileTypeJSON: {},
+	FileTypeJS:   {},
 }
 
 type File struct {
@@ -71,14 +75,43 @@ func parseDates(v interface{}) interface{} {
 	return v
 }
 
+func loadJS(input []byte) ([]byte, error) {
+	vm := goja.New()
+	_, err := vm.RunString(string(input))
+	if err != nil {
+		return nil, err
+	}
+
+	var fn func() map[string]interface{}
+	err = vm.ExportTo(vm.Get("data"), &fn)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert the response to a byte array
+	jsonData, err := json.Marshal(fn())
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonData, nil
+}
+
 func (f *File) LoadFile() (jsonData *FileData, err error) {
 	var fileData []byte
 
 	switch f.Type {
-	case FileTypeJSON:
+	case FileTypeJSON, FileTypeJS:
 		fileData, err = os.ReadFile(f.Path)
 		if err != nil {
 			return nil, err
+		}
+
+		if f.Type == FileTypeJS {
+			fileData, err = loadJS(fileData)
+			if err != nil {
+				return nil, err
+			}
 		}
 	default:
 		return nil, fmt.Errorf("unknown file type: %s", f.Type)

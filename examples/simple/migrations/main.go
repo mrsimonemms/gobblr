@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cenkalti/backoff/v4"
 	"gorm.io/driver/mysql"
@@ -27,13 +28,19 @@ type User struct {
 	Password     string
 }
 
+type Item struct {
+	gorm.Model
+	Item     int
+	SomeDate time.Time
+}
+
 func execute(dialector gorm.Dialector) error {
 	db, err := gorm.Open(dialector, &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	if err := db.AutoMigrate(&User{}); err != nil {
+	if err := db.AutoMigrate(&User{}, &Item{}); err != nil {
 		return err
 	}
 
