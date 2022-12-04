@@ -10,3 +10,5 @@ Thumbs.db
 /gobblr
 /examples/simple/migrations/simple
 /sqlite.db
+
+dist/
