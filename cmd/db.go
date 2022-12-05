@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/mrsimonemms/gobblr/pkg/drivers"
 	"github.com/mrsimonemms/gobblr/pkg/gobblr"
@@ -66,11 +67,29 @@ var dbCmd = &cobra.Command{
 	},
 }
 
+const (
+	envvarPrefix = "GOBBLR"
+)
+
+func bindEnv(key string) {
+	envvarName := fmt.Sprintf("%s_%s", envvarPrefix, key)
+	envvarName = strings.Replace(envvarName, "-", "_", -1)
+	envvarName = strings.ToUpper(envvarName)
+
+	err := viper.BindEnv(key, envvarName)
+	cobra.CheckErr(err)
+}
+
 func init() {
 	rootCmd.AddCommand(dbCmd)
 
 	currentPath, err := os.Getwd()
 	cobra.CheckErr(err)
+
+	bindEnv("path")
+	bindEnv("retries")
+	bindEnv("run")
+	bindEnv("run-port")
 
 	viper.SetDefault("path", path.Join(currentPath, "data"))
 	viper.SetDefault("retries", 0)

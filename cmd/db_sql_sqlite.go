@@ -37,6 +37,8 @@ var dbSqlSqliteCmd = &cobra.Command{
 func init() {
 	dbSqlCmd.AddCommand(dbSqlSqliteCmd)
 
+	bindEnv("file")
+
 	viper.SetDefault("file", "sqlite.db")
 	dbSqlSqliteCmd.Flags().StringVarP(&dbSqlSqliteOpts.File, "file", "f", viper.GetString("file"), "SQLite database file")
 }
