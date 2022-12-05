@@ -47,6 +47,12 @@ var dbSqlSqlserverCmd = &cobra.Command{
 func init() {
 	dbSqlCmd.AddCommand(dbSqlSqlserverCmd)
 
+	bindEnv("database")
+	bindEnv("host")
+	bindEnv("password")
+	bindEnv("port")
+	bindEnv("username")
+
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", 1433)
 	viper.SetDefault("username", "sa")

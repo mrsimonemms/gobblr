@@ -59,6 +59,9 @@ tasks:
     init: |
 
       go install ./...
+    env:
+      GOBBLR_DATABASE: gobblr
+      GOBBLR_PATH: ./examples/simple/data
     command: |
       # Install commitlint
       npm i -g @commitlint/{config-conventional,cli}
