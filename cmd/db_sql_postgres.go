@@ -47,6 +47,13 @@ var dbSqlPostgresCmd = &cobra.Command{
 func init() {
 	dbSqlCmd.AddCommand(dbSqlPostgresCmd)
 
+
+	bindEnv("database")
+	bindEnv("host")
+	bindEnv("password")
+	bindEnv("port")
+	bindEnv("username")
+
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", 5432)
 	viper.SetDefault("username", "postgres")

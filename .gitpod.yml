@@ -61,6 +61,9 @@ tasks:
       go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 
       go install ./...
+    env:
+      GOBBLR_DATABASE: gobblr
+      GOBBLR_PATH: ./examples/simple/data
     command: |
       # Copy .cobra.yaml to $HOME
       cp .cobra.yaml $HOME/.cobra.yaml
