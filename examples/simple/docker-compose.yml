@@ -1,0 +1,22 @@
+services:
+  ## MongoDB
+  gobblr-mongodb: &gobblr
+    build:
+      context: ../..
+    ports:
+      - 3000:5670
+    environment:
+      GOBBLR_CONNECTION_URI: mongodb://mongodb:27017/gobblr
+      GOBBLR_DATABASE: gobblr
+      GOBBLR_PATH: /data
+    links:
+      - mongodb
+    volumes:
+      - ./data:/data
+    restart: on-failure
+    command: db mongodb --run
+
+  mongodb:
+    image: library/mongo
+    ports:
+      - 4000:27017
