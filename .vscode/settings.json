@@ -1,0 +1,8 @@
+{
+  "go.buildFlags": [
+    "-tags=e2e"
+  ],
+  "go.testFlags": [
+    "-tags=e2e"
+  ]
+}

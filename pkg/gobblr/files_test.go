@@ -1,6 +1,3 @@
-//go:build unit
-// +build unit
-
 package gobblr
 
 import (
@@ -29,7 +26,7 @@ func TestParseDates(t *testing.T) {
 		{
 			Name:     "rfc3339 date",
 			Input:    "2022-12-23T10:20:30Z",
-			Expected: time.Date(2022, 12, 23, 10, 20, 30, 00, time.UTC),
+			Expected: time.Date(2022, 12, 23, 10, 20, 30, 0, time.UTC),
 		},
 		{
 			Name:     "YYYY-MM-DD date",
