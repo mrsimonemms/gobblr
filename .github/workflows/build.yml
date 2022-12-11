@@ -42,6 +42,9 @@ jobs:
       - name: Lint Go
         uses: golangci/golangci-lint-action@v3
 
+      - name: Go test
+        run: go test -v ./... -tags unit
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
