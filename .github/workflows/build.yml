@@ -10,13 +10,21 @@ jobs:
       max-parallel: 5
       matrix:
         include:
-          - db: mongodb:4
+          - db: mongo:4
+            dbEnv: {}
 
-          - db: mongodb:5
+          - db: mongo:5
+            dbEnv: {}
 
-          - db: mongodb:6
+          - db: mongo:6
+            dbEnv: {}
 
-          - db: mongodb
+          - db: mongo
+            dbEnv: {}
+    services:
+      db:
+        image: ${{ matrix.db }}
+        env: ${{ matrix.dbEnv }}
     steps:
       - uses: actions/checkout@v3
 
