@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-go@v3
 
       - name: Run e2e tests
-        run: go test -v ./... -tags e2e
+        run: make e2e
 
   build:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
 
       - name: Go test
-        run: go test -v ./... -tags unit
+        run: make unit
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
