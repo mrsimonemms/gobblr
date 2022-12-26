@@ -1,5 +1,11 @@
 # Gobblr
 
+[![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](https://go.dev/)
+[![Maintainer](https://img.shields.io/badge/maintainer-mrsimonemms-blue)](https://github.com/MrSimonEmms)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mrsimonemms/gobblr)](https://goreportcard.com/report/github.com/mrsimonemms/gobblr)
+[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/mrsimonemms/gobblr.svg)](https://github.com/mrsimonemms/gobblr)
+[![GoDoc reference example](https://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/mrsimonemms/gobblr)
+
 Make your development databases gobble up known data
 
 <!-- toc -->
