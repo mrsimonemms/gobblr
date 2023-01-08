@@ -3,6 +3,7 @@ tasks:
     init: |
       cd ./examples/simple/migrations
       go build .
+      gp sync-done migration
     command: |
       exit 0
 
@@ -19,6 +20,7 @@ tasks:
         --name mysql \
         mysql &
 
+      gp sync-await migration
       ./examples/simple/migrations/simple
 
   - name: MongoDB
@@ -42,6 +44,7 @@ tasks:
         --name pgsql \
         postgres &
 
+      gp sync-await migration
       ./examples/simple/migrations/simple
 
   - name: SQLite
@@ -50,6 +53,7 @@ tasks:
     command: |
       export DB_CONNECTION="$GITPOD_REPO_ROOT/sqlite.db"
 
+      gp sync-await migration
       ./examples/simple/migrations/simple
 
   - before: |
