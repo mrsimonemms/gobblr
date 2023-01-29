@@ -125,6 +125,8 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v3
+        # skip pushing to the container registry if this isn't built on main
+        if: github.ref == 'refs/heads/main'
         with:
           context: .
           build-args: |
@@ -136,7 +138,8 @@ jobs:
           tags: ${{ steps.docker.outputs.image_name }}
 
       - name: Run GoReleaser
-        if: steps.branch-name.outputs.is_tag == 'true'
+        # skip creating a release if this isn't built on main
+        if: steps.branch-name.outputs.is_tag == 'true' && github.ref == 'refs/heads/main'
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
