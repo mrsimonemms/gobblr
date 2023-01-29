@@ -9,7 +9,7 @@ ENV GOOS=linux
 ENV PROJECT_NAME="${PROJECT_NAME}"
 RUN go build \
   -ldflags \
-  "-X $GIT_REPO/cmd.Version=$VERSION -X $GIT_REPO/cmd.GitCommit=$GIT_COMMIT" \
+  "-w -s -X $GIT_REPO/cmd.Version=$VERSION -X $GIT_REPO/cmd.GitCommit=$GIT_COMMIT" \
   -o /app/app
 ENTRYPOINT /app/app
 
