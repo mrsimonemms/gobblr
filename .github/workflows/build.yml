@@ -2,6 +2,8 @@ name: Build
 on:
   - pull_request
   - push
+permissions:
+  packages: write
 jobs:
   test:
     runs-on: ubuntu-latest
