@@ -134,7 +134,7 @@ jobs:
             GIT_REPO=${{ steps.docker.outputs.gitRepo }}
             VERSION=${{ steps.docker.outputs.version }}
           platforms: ${{ steps.docker.outputs.platforms }}
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: ${{ steps.docker.outputs.image_name }}
 
       - name: Run GoReleaser
