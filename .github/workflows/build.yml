@@ -3,6 +3,7 @@ on:
   - pull_request
   - push
 permissions:
+  contents: write
   packages: write
 jobs:
   test:
@@ -142,6 +143,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
+          GIT_REPO: ${{ steps.docker.outputs.gitRepo }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

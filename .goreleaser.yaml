@@ -13,6 +13,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -w -s -X {{ .Env.GIT_REPO }}/cmd.Version={{ .Version }} -X {{ .Env.GIT_REPO }}/cmd.GitCommit={{ .Commit }}
 archives:
   - replacements:
       darwin: Darwin
