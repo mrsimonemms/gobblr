@@ -29,8 +29,9 @@ func MakeSQLPostgres() *cobra.Command {
 
 	// dbSQLPostgresCmd represents the postgres command
 	dbSQLPostgresCmd := &cobra.Command{
-		Use:   "postgres",
-		Short: "PostgreSQL ingestion commands",
+		Use:     "postgres",
+		Aliases: []string{"pgsql"},
+		Short:   "PostgreSQL ingestion commands",
 		Run: func(cmd *cobra.Command, args []string) {
 			dbOpts.Driver = sql.PostgreSQL(
 				dbSQLPostgresOpts.Database,
