@@ -18,48 +18,31 @@ package cmd
 import (
 	"github.com/mrsimonemms/gobblr/pkg/drivers/sql"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var dbSQLSqlserverOpts struct {
-	Database string
-	Host     string
-	Password string
-	Port     int
-	User     string
-}
+func MakeSQLSqlserver() *cobra.Command {
+	dbSQLSqlserverOpts := &dbSQLOpts{
+		Host: "localhost",
+		Port: 1433,
+		User: "sa",
+	}
 
-// dbSQLSqlserverCmd represents the sqlserver command
-var dbSQLSqlserverCmd = &cobra.Command{
-	Use:   "sqlserver",
-	Short: "SQL server ingestion commands",
-	Run: func(cmd *cobra.Command, args []string) {
-		dbOpts.Driver = sql.SQLServer(
-			dbSQLSqlserverOpts.Database,
-			dbSQLSqlserverOpts.Host,
-			dbSQLSqlserverOpts.Password,
-			dbSQLSqlserverOpts.Port,
-			dbSQLSqlserverOpts.User,
-		)
-	},
-}
+	// dbSQLSqlserverCmd represents the sqlserver command
+	dbSQLSqlserverCmd := &cobra.Command{
+		Use:   "sqlserver",
+		Short: "SQL server ingestion commands",
+		Run: func(cmd *cobra.Command, args []string) {
+			dbOpts.Driver = sql.SQLServer(
+				dbSQLSqlserverOpts.Database,
+				dbSQLSqlserverOpts.Host,
+				dbSQLSqlserverOpts.Password,
+				dbSQLSqlserverOpts.Port,
+				dbSQLSqlserverOpts.User,
+			)
+		},
+	}
 
-func init() {
-	dbSQLCmd.AddCommand(dbSQLSqlserverCmd)
+	dbSQLFlags(dbSQLSqlserverCmd, dbSQLSqlserverOpts)
 
-	bindEnv("database")
-	bindEnv("host")
-	bindEnv("password")
-	bindEnv("port")
-	bindEnv("username")
-
-	viper.SetDefault("host", "localhost")
-	viper.SetDefault("port", 1433)
-	viper.SetDefault("username", "sa")
-	dbSQLSqlserverCmd.Flags().
-		StringVarP(&dbSQLSqlserverOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
-	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.Host, "host", "H", viper.GetString("host"), "database host name")
-	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.Password, "password", "p", viper.GetString("password"), "database password")
-	dbSQLSqlserverCmd.Flags().IntVarP(&dbSQLSqlserverOpts.Port, "port", "P", viper.GetInt("port"), "database port")
-	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.User, "username", "u", viper.GetString("username"), "database username")
+	return dbSQLSqlserverCmd
 }
