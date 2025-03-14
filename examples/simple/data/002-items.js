@@ -16,14 +16,14 @@
 
 // The response of the "data" function is what's put in the database
 function data() {
-  return  {
+  return {
     meta: {
       createdKey: 'created_at',
       updatedKey: 'updated_at'
     },
     data: [
       {
-        item: 2,
+        item: 1,
         some_date: new Date(),
       },
       {
