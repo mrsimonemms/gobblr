@@ -13,15 +13,11 @@
 # limitations under the License.
 
 FROM golang AS builder
-WORKDIR /app
-ADD . .
+USER 1000
+WORKDIR /go/app
+COPY --chown=1000:1000 . .
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-RUN go build -o /app/app
-ENTRYPOINT /app/app
-
-FROM alpine
-RUN apk --no-cache add ca-certificates
-WORKDIR /app
-COPY --from=builder /app/app /app
-ENTRYPOINT [ "/app/app" ]
+ENV GOCACHE=/go/.cache
+COPY --from=cosmtrek/air /go/bin/air /go/bin/air
+ENTRYPOINT [ "air" ]
