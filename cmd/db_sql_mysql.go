@@ -18,47 +18,31 @@ package cmd
 import (
 	"github.com/mrsimonemms/gobblr/pkg/drivers/sql"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var dbSQLMysqlOpts struct {
-	Database string
-	Host     string
-	Password string
-	Port     int
-	User     string
-}
+func MakeSQLMysql() *cobra.Command {
+	dbSQLMysqlOpts := &dbSQLOpts{
+		Host: "localhost",
+		Port: 3306,
+		User: "root",
+	}
 
-// dbSQLMysqlCmd represents the mysql command
-var dbSQLMysqlCmd = &cobra.Command{
-	Use:   "mysql",
-	Short: "MySQL ingestion commands",
-	Run: func(cmd *cobra.Command, args []string) {
-		dbOpts.Driver = sql.MySQL(
-			dbSQLMysqlOpts.Database,
-			dbSQLMysqlOpts.Host,
-			dbSQLMysqlOpts.Password,
-			dbSQLMysqlOpts.Port,
-			dbSQLMysqlOpts.User,
-		)
-	},
-}
+	// dbSQLMysqlCmd represents the mysql command
+	dbSQLMysqlCmd := &cobra.Command{
+		Use:   "mysql",
+		Short: "MySQL ingestion commands",
+		Run: func(cmd *cobra.Command, args []string) {
+			dbOpts.Driver = sql.MySQL(
+				dbSQLMysqlOpts.Database,
+				dbSQLMysqlOpts.Host,
+				dbSQLMysqlOpts.Password,
+				dbSQLMysqlOpts.Port,
+				dbSQLMysqlOpts.User,
+			)
+		},
+	}
 
-func init() {
-	dbSQLCmd.AddCommand(dbSQLMysqlCmd)
+	dbSQLFlags(dbSQLMysqlCmd, dbSQLMysqlOpts)
 
-	bindEnv("database")
-	bindEnv("host")
-	bindEnv("password")
-	bindEnv("port")
-	bindEnv("username")
-
-	viper.SetDefault("host", "localhost")
-	viper.SetDefault("port", 3306)
-	viper.SetDefault("username", "root")
-	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
-	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Host, "host", "H", viper.GetString("host"), "database host name")
-	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Password, "password", "p", viper.GetString("password"), "database password")
-	dbSQLMysqlCmd.Flags().IntVarP(&dbSQLMysqlOpts.Port, "port", "P", viper.GetInt("port"), "database port")
-	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.User, "username", "u", viper.GetString("username"), "database username")
+	return dbSQLMysqlCmd
 }

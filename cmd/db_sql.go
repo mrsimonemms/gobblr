@@ -17,7 +17,33 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+type dbSQLOpts struct {
+	Database string
+	Host     string
+	Password string
+	Port     int
+	User     string
+}
+
+func dbSQLFlags(cmd *cobra.Command, opts *dbSQLOpts) {
+	bindEnv("database")
+	bindEnv("host")
+	bindEnv("password")
+	bindEnv("port")
+	bindEnv("username")
+
+	viper.SetDefault("host", opts.Host)
+	viper.SetDefault("port", opts.Port)
+	viper.SetDefault("username", opts.User)
+	cmd.Flags().StringVarP(&opts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
+	cmd.Flags().StringVarP(&opts.Host, "host", "H", viper.GetString("host"), "database host name")
+	cmd.Flags().StringVarP(&opts.Password, "password", "p", viper.GetString("password"), "database password")
+	cmd.Flags().IntVarP(&opts.Port, "port", "P", viper.GetInt("port"), "database port")
+	cmd.Flags().StringVarP(&opts.User, "username", "u", viper.GetString("username"), "database username")
+}
 
 // dbSQLCmd represents the sql command
 var dbSQLCmd = &cobra.Command{
@@ -27,4 +53,7 @@ var dbSQLCmd = &cobra.Command{
 
 func init() {
 	dbCmd.AddCommand(dbSQLCmd)
+	dbSQLCmd.AddCommand(MakeSQLMysql())
+	dbSQLCmd.AddCommand(MakeSQLPostgres())
+	dbSQLCmd.AddCommand(MakeSQLSqlserver())
 }
