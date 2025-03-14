@@ -27,11 +27,11 @@ type SQL struct {
 
 func (db *SQL) Auth() (err error) {
 	// Connect to the database
-	if gormDb, err := gorm.Open(db.driver, &gorm.Config{}); err != nil {
+	if gormDB, err := gorm.Open(db.driver, &gorm.Config{}); err != nil {
 		return err
 	} else {
 		// Success - store the connection
-		db.activeConnection = gormDb
+		db.activeConnection = gormDB
 	}
 
 	// Perform a simple query to ensure connectivity
@@ -54,7 +54,7 @@ func (db *SQL) DriverName() string {
 	return db.driver.Name()
 }
 
-func (db *SQL) InsertBulk(table string, data []map[string]interface{}) (int, error) {
+func (db *SQL) InsertBulk(table string, data []map[string]any) (int, error) {
 	result := db.activeConnection.Table(table).CreateInBatches(data, 100)
 	if err := result.Error; err != nil {
 		return 0, err

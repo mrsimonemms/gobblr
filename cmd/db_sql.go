@@ -19,12 +19,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// dbSqlCmd represents the sql command
-var dbSqlCmd = &cobra.Command{
+// dbSQLCmd represents the sql command
+var dbSQLCmd = &cobra.Command{
 	Use:   "sql",
 	Short: "SQL ingestion commands",
 }
 
 func init() {
-	dbCmd.AddCommand(dbSqlCmd)
+	dbCmd.AddCommand(dbSQLCmd)
 }

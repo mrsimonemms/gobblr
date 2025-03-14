@@ -81,7 +81,7 @@ func (h handler) ResetData(c *gin.Context) {
 	}
 
 	// Log the result
-	log.Info().Fields(map[string]interface{}{
+	log.Info().Fields(map[string]any{
 		"inserted": inserted,
 	}).Int("run count", runCount).Msg("Successfully inserted data")
 

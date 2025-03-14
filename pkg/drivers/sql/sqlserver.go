@@ -22,7 +22,7 @@ import (
 	"gorm.io/driver/sqlserver"
 )
 
-func SQLServer(database string, host string, password string, port int, user string) *SQL {
+func SQLServer(database, host, password string, port int, user string) *SQL {
 	dsn := "sqlserver://"
 
 	if user != "" && password != "" {

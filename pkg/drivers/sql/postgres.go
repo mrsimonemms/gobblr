@@ -23,7 +23,7 @@ import (
 	"gorm.io/driver/postgres"
 )
 
-func PostgreSQL(database string, host string, password string, port int, user string) *SQL {
+func PostgreSQL(database, host, password string, port int, user string) *SQL {
 	var dsn []string
 
 	if user != "" {
@@ -35,8 +35,11 @@ func PostgreSQL(database string, host string, password string, port int, user st
 	if host != "" {
 		dsn = append(dsn, fmt.Sprintf("host=%s", host))
 	}
-	dsn = append(dsn, fmt.Sprintf("port=%d", port))
-	dsn = append(dsn, fmt.Sprintf("dbname=%s", database))
+	dsn = append(
+		dsn,
+		fmt.Sprintf("port=%d", port),
+		fmt.Sprintf("dbname=%s", database),
+	)
 
 	return &SQL{
 		driver: postgres.Open(strings.Join(dsn, " ")),

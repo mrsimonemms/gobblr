@@ -63,7 +63,7 @@ var dbCmd = &cobra.Command{
 			return gobblr.Serve(dbOpts.DataPath, dbOpts.Driver, dbOpts.Retries, dbOpts.WebPort)
 		}
 
-		log.Info().Fields(map[string]interface{}{
+		log.Info().Fields(map[string]any{
 			"inserted": inserted,
 		}).Msg("Successfully inserted data")
 
@@ -77,7 +77,7 @@ const (
 
 func bindEnv(key string) {
 	envvarName := fmt.Sprintf("%s_%s", envvarPrefix, key)
-	envvarName = strings.Replace(envvarName, "-", "_", -1)
+	envvarName = strings.ReplaceAll(envvarName, "-", "_")
 	envvarName = strings.ToUpper(envvarName)
 
 	err := viper.BindEnv(key, envvarName)
