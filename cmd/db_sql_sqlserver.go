@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var dbSqlSqlserverOpts struct {
+var dbSQLSqlserverOpts struct {
 	Database string
 	Host     string
 	Password string
@@ -29,23 +29,23 @@ var dbSqlSqlserverOpts struct {
 	User     string
 }
 
-// dbSqlSqlserverCmd represents the sqlserver command
-var dbSqlSqlserverCmd = &cobra.Command{
+// dbSQLSqlserverCmd represents the sqlserver command
+var dbSQLSqlserverCmd = &cobra.Command{
 	Use:   "sqlserver",
 	Short: "SQL server ingestion commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		dbOpts.Driver = sql.SQLServer(
-			dbSqlSqlserverOpts.Database,
-			dbSqlSqlserverOpts.Host,
-			dbSqlSqlserverOpts.Password,
-			dbSqlSqlserverOpts.Port,
-			dbSqlSqlserverOpts.User,
+			dbSQLSqlserverOpts.Database,
+			dbSQLSqlserverOpts.Host,
+			dbSQLSqlserverOpts.Password,
+			dbSQLSqlserverOpts.Port,
+			dbSQLSqlserverOpts.User,
 		)
 	},
 }
 
 func init() {
-	dbSqlCmd.AddCommand(dbSqlSqlserverCmd)
+	dbSQLCmd.AddCommand(dbSQLSqlserverCmd)
 
 	bindEnv("database")
 	bindEnv("host")
@@ -56,9 +56,10 @@ func init() {
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", 1433)
 	viper.SetDefault("username", "sa")
-	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
-	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Host, "host", "H", viper.GetString("host"), "database host name")
-	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.Password, "password", "p", viper.GetString("password"), "database password")
-	dbSqlSqlserverCmd.Flags().IntVarP(&dbSqlSqlserverOpts.Port, "port", "P", viper.GetInt("port"), "database port")
-	dbSqlSqlserverCmd.Flags().StringVarP(&dbSqlSqlserverOpts.User, "username", "u", viper.GetString("username"), "database username")
+	dbSQLSqlserverCmd.Flags().
+		StringVarP(&dbSQLSqlserverOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
+	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.Host, "host", "H", viper.GetString("host"), "database host name")
+	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.Password, "password", "p", viper.GetString("password"), "database password")
+	dbSQLSqlserverCmd.Flags().IntVarP(&dbSQLSqlserverOpts.Port, "port", "P", viper.GetInt("port"), "database port")
+	dbSQLSqlserverCmd.Flags().StringVarP(&dbSQLSqlserverOpts.User, "username", "u", viper.GetString("username"), "database username")
 }

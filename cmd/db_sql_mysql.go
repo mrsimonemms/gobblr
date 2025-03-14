@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var dbSqlMysqlOpts struct {
+var dbSQLMysqlOpts struct {
 	Database string
 	Host     string
 	Password string
@@ -29,23 +29,23 @@ var dbSqlMysqlOpts struct {
 	User     string
 }
 
-// dbSqlMysqlCmd represents the mysql command
-var dbSqlMysqlCmd = &cobra.Command{
+// dbSQLMysqlCmd represents the mysql command
+var dbSQLMysqlCmd = &cobra.Command{
 	Use:   "mysql",
 	Short: "MySQL ingestion commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		dbOpts.Driver = sql.MySQL(
-			dbSqlMysqlOpts.Database,
-			dbSqlMysqlOpts.Host,
-			dbSqlMysqlOpts.Password,
-			dbSqlMysqlOpts.Port,
-			dbSqlMysqlOpts.User,
+			dbSQLMysqlOpts.Database,
+			dbSQLMysqlOpts.Host,
+			dbSQLMysqlOpts.Password,
+			dbSQLMysqlOpts.Port,
+			dbSQLMysqlOpts.User,
 		)
 	},
 }
 
 func init() {
-	dbSqlCmd.AddCommand(dbSqlMysqlCmd)
+	dbSQLCmd.AddCommand(dbSQLMysqlCmd)
 
 	bindEnv("database")
 	bindEnv("host")
@@ -56,9 +56,9 @@ func init() {
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", 3306)
 	viper.SetDefault("username", "root")
-	dbSqlMysqlCmd.Flags().StringVarP(&dbSqlMysqlOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
-	dbSqlMysqlCmd.Flags().StringVarP(&dbSqlMysqlOpts.Host, "host", "H", viper.GetString("host"), "database host name")
-	dbSqlMysqlCmd.Flags().StringVarP(&dbSqlMysqlOpts.Password, "password", "p", viper.GetString("password"), "database password")
-	dbSqlMysqlCmd.Flags().IntVarP(&dbSqlMysqlOpts.Port, "port", "P", viper.GetInt("port"), "database port")
-	dbSqlMysqlCmd.Flags().StringVarP(&dbSqlMysqlOpts.User, "username", "u", viper.GetString("username"), "database username")
+	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
+	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Host, "host", "H", viper.GetString("host"), "database host name")
+	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.Password, "password", "p", viper.GetString("password"), "database password")
+	dbSQLMysqlCmd.Flags().IntVarP(&dbSQLMysqlOpts.Port, "port", "P", viper.GetInt("port"), "database port")
+	dbSQLMysqlCmd.Flags().StringVarP(&dbSQLMysqlOpts.User, "username", "u", viper.GetString("username"), "database username")
 }

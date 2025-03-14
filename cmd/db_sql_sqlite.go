@@ -21,24 +21,24 @@ import (
 	"github.com/spf13/viper"
 )
 
-var dbSqlSqliteOpts struct {
+var dbSQLSqliteOpts struct {
 	File string
 }
 
-// dbSqlSqliteCmd represents the sqlite command
-var dbSqlSqliteCmd = &cobra.Command{
+// dbSQLSqliteCmd represents the sqlite command
+var dbSQLSqliteCmd = &cobra.Command{
 	Use:   "sqlite",
 	Short: "SQLite ingestion commands",
 	Run: func(cmd *cobra.Command, args []string) {
-		dbOpts.Driver = sql.SQLite(dbSqlSqliteOpts.File)
+		dbOpts.Driver = sql.SQLite(dbSQLSqliteOpts.File)
 	},
 }
 
 func init() {
-	dbSqlCmd.AddCommand(dbSqlSqliteCmd)
+	dbSQLCmd.AddCommand(dbSQLSqliteCmd)
 
 	bindEnv("file")
 
 	viper.SetDefault("file", "sqlite.db")
-	dbSqlSqliteCmd.Flags().StringVarP(&dbSqlSqliteOpts.File, "file", "f", viper.GetString("file"), "SQLite database file")
+	dbSQLSqliteCmd.Flags().StringVarP(&dbSQLSqliteOpts.File, "file", "f", viper.GetString("file"), "SQLite database file")
 }

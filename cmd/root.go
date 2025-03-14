@@ -31,8 +31,9 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gobblr",
-	Short: "Easily ingest test data into your development stack",
+	Use:     "gobblr",
+	Short:   "Easily ingest test data into your development stack",
+	Version: Version,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if level, err := zerolog.ParseLevel(logLevel); err != nil {
 			return err
@@ -60,7 +61,12 @@ func init() {
 
 	viper.SetDefault("log-level", "info")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gobblr.yaml)")
-	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", viper.GetString("log-level"), `log level - "trace", "debug", "info", "warn", "error", "fatal", "panic" or "disabled"`)
+	rootCmd.PersistentFlags().StringVar(
+		&logLevel,
+		"log-level",
+		viper.GetString("log-level"),
+		`log level - "trace", "debug", "info", "warn", "error", "fatal", "panic" or "disabled"`,
+	)
 }
 
 // initConfig reads in config file and ENV variables if set.

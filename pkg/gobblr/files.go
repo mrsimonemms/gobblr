@@ -48,8 +48,8 @@ type File struct {
 }
 
 type FileData struct {
-	Meta MetaData                 `json:"meta"`
-	Data []map[string]interface{} `json:"data"`
+	Meta MetaData         `json:"meta"`
+	Data []map[string]any `json:"data"`
 }
 
 type MetaData struct {
@@ -60,9 +60,9 @@ type MetaData struct {
 }
 
 // Iterate through all keys searching for ISO8601 dates and convert to Golang time.Date
-func detectAndConvertDates(data map[string]interface{}) map[string]interface{} {
+func detectAndConvertDates(data map[string]any) map[string]any {
 	for k, v := range data {
-		mapValue, ok := data[k].(map[string]interface{})
+		mapValue, ok := data[k].(map[string]any)
 		if ok {
 			v = detectAndConvertDates(mapValue)
 		}
@@ -74,7 +74,7 @@ func detectAndConvertDates(data map[string]interface{}) map[string]interface{} {
 }
 
 // If string is in a datetime format, it converts it to time.Date
-func parseDates(v interface{}) interface{} {
+func parseDates(v any) any {
 	// Convert the value to a string
 	stringValue := fmt.Sprintf("%v", v)
 
@@ -98,7 +98,7 @@ func loadJS(input []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	var fn func() map[string]interface{}
+	var fn func() map[string]any
 	err = vm.ExportTo(vm.Get("data"), &fn)
 	if err != nil {
 		return nil, err
@@ -141,14 +141,14 @@ func (f *File) LoadFile() (jsonData *FileData, err error) {
 			Updated:    true,
 			UpdatedKey: "updatedAt",
 		},
-		Data: make([]map[string]interface{}, 0),
+		Data: make([]map[string]any, 0),
 	}
 
 	// First, check if it's in the data-only format
-	var rawData []map[string]interface{}
-	if err := json.Unmarshal([]byte(fileData), &rawData); err != nil {
+	var rawData []map[string]any
+	if err := json.Unmarshal(fileData, &rawData); err != nil {
 		// Error parsing - treat JSON as in FileData format
-		if err := json.Unmarshal([]byte(fileData), &jsonData); err != nil {
+		if err := json.Unmarshal(fileData, &jsonData); err != nil {
 			// Data in unknown format
 			return nil, err
 		}
@@ -187,10 +187,7 @@ func FindFiles(dataPath string) ([]File, error) {
 		return nil, err
 	}
 
-	regex, err := regexp.Compile(`(?P<ID>\d+)-(?P<Table>\w+).(?P<Ext>\w+)`)
-	if err != nil {
-		return nil, err
-	}
+	regex := regexp.MustCompile(`(?P<ID>\d+)-(?P<Table>\w+).(?P<Ext>\w+)`)
 	regexNames := regex.SubexpNames()
 
 	for _, file := range files {

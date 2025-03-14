@@ -22,7 +22,7 @@ import (
 	"gorm.io/driver/mysql"
 )
 
-func MySQL(database string, host string, password string, port int, user string) *SQL {
+func MySQL(database, host, password string, port int, user string) *SQL {
 	var dsn string
 
 	if user != "" && password != "" {

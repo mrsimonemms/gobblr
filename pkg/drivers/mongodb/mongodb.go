@@ -32,13 +32,13 @@ type mongoConnection struct {
 
 type MongoDB struct {
 	activeConnection mongoConnection
-	connectionUri    string
+	connectionURI    string
 	database         string
 }
 
 func (db *MongoDB) Auth() error {
 	opts := options.Client().
-		ApplyURI(db.connectionUri).
+		ApplyURI(db.connectionURI).
 		SetConnectTimeout(1 * time.Second) // Connection should have a short timeout to fail fast
 
 	client, err := mongo.Connect(context.TODO(), opts)
@@ -63,9 +63,9 @@ func (db *MongoDB) DriverName() string {
 	return "mongodb"
 }
 
-func (db *MongoDB) InsertBulk(collection string, raw []map[string]interface{}) (int, error) {
+func (db *MongoDB) InsertBulk(collection string, raw []map[string]any) (int, error) {
 	var err error
-	data := make([]interface{}, 0)
+	data := make([]any, 0)
 
 	// Conver the raw data into MongoDB format
 	for _, row := range raw {
@@ -98,9 +98,9 @@ func (db *MongoDB) Truncate(collection string) error {
 		Drop(context.TODO())
 }
 
-func New(connectionUri string, database string) *MongoDB {
+func New(connectionURI, database string) *MongoDB {
 	return &MongoDB{
-		connectionUri: connectionUri,
+		connectionURI: connectionURI,
 		database:      database,
 	}
 }

@@ -32,7 +32,7 @@ type Driver interface {
 	DriverName() string
 
 	// Insert data in bulk
-	InsertBulk(table string, data []map[string]interface{}) (inserted int, err error)
+	InsertBulk(table string, data []map[string]any) (inserted int, err error)
 
 	// Remove all the data from the table
 	Truncate(table string) error

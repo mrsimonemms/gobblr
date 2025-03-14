@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var dbSqlPostgresOpts struct {
+var dbSQLPostgresOpts struct {
 	Database string
 	Host     string
 	Password string
@@ -29,23 +29,23 @@ var dbSqlPostgresOpts struct {
 	User     string
 }
 
-// dbSqlPostgresCmd represents the postgres command
-var dbSqlPostgresCmd = &cobra.Command{
+// dbSQLPostgresCmd represents the postgres command
+var dbSQLPostgresCmd = &cobra.Command{
 	Use:   "postgres",
 	Short: "PostgreSQL ingestion commands",
 	Run: func(cmd *cobra.Command, args []string) {
 		dbOpts.Driver = sql.PostgreSQL(
-			dbSqlPostgresOpts.Database,
-			dbSqlPostgresOpts.Host,
-			dbSqlPostgresOpts.Password,
-			dbSqlPostgresOpts.Port,
-			dbSqlPostgresOpts.User,
+			dbSQLPostgresOpts.Database,
+			dbSQLPostgresOpts.Host,
+			dbSQLPostgresOpts.Password,
+			dbSQLPostgresOpts.Port,
+			dbSQLPostgresOpts.User,
 		)
 	},
 }
 
 func init() {
-	dbSqlCmd.AddCommand(dbSqlPostgresCmd)
+	dbSQLCmd.AddCommand(dbSQLPostgresCmd)
 
 	bindEnv("database")
 	bindEnv("host")
@@ -56,9 +56,10 @@ func init() {
 	viper.SetDefault("host", "localhost")
 	viper.SetDefault("port", 5432)
 	viper.SetDefault("username", "postgres")
-	dbSqlPostgresCmd.Flags().StringVarP(&dbSqlPostgresOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
-	dbSqlPostgresCmd.Flags().StringVarP(&dbSqlPostgresOpts.Host, "host", "H", viper.GetString("host"), "database host name")
-	dbSqlPostgresCmd.Flags().StringVarP(&dbSqlPostgresOpts.Password, "password", "p", viper.GetString("password"), "database password")
-	dbSqlPostgresCmd.Flags().IntVarP(&dbSqlPostgresOpts.Port, "port", "P", viper.GetInt("port"), "database port")
-	dbSqlPostgresCmd.Flags().StringVarP(&dbSqlPostgresOpts.User, "username", "u", viper.GetString("username"), "database username")
+	dbSQLPostgresCmd.Flags().
+		StringVarP(&dbSQLPostgresOpts.Database, "database", "d", viper.GetString("database"), "name of the database to use")
+	dbSQLPostgresCmd.Flags().StringVarP(&dbSQLPostgresOpts.Host, "host", "H", viper.GetString("host"), "database host name")
+	dbSQLPostgresCmd.Flags().StringVarP(&dbSQLPostgresOpts.Password, "password", "p", viper.GetString("password"), "database password")
+	dbSQLPostgresCmd.Flags().IntVarP(&dbSQLPostgresOpts.Port, "port", "P", viper.GetInt("port"), "database port")
+	dbSQLPostgresCmd.Flags().StringVarP(&dbSQLPostgresOpts.User, "username", "u", viper.GetString("username"), "database username")
 }
