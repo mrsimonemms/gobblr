@@ -7,6 +7,9 @@ node_modules
 .DS_Store
 Thumbs.db
 
+.envrc
+go.work.sum
+
 /gobblr
 /examples/simple/migrations/simple
 /sqlite.db

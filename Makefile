@@ -12,16 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang AS builder
-WORKDIR /app
-ADD . .
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-RUN go build -o /app/app
-ENTRYPOINT /app/app
-
-FROM alpine
-RUN apk --no-cache add ca-certificates
-WORKDIR /app
-COPY --from=builder /app/app /app
-ENTRYPOINT [ "/app/app" ]
+cruft-update:
+ifeq (,$(wildcard .cruft.json))
+	@echo "Cruft not configured"
+else
+	@cruft check || cruft update --skip-apply-ask --refresh-private-variables
+endif
+.PHONY: cruft-update
