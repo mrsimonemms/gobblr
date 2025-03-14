@@ -11,5 +11,5 @@ You can use [Docker Compose](https://docs.docker.com/compose) to run the example
 stack:
 
 ```shell
-docker-compose run --rm --service-ports gobblr-<db-type>
+docker compose up gobblr-<db-type>
 ```

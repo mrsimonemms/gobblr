@@ -20,3 +20,110 @@ services:
     image: library/mongo
     ports:
       - 4000:27017
+
+  ## MySQL
+  gobblr-mysql:
+    <<: *gobblr
+    ports:
+      - 3001:5670
+    environment:
+      GOBBLR_DATABASE: app
+      GOBBLR_HOST: mysql
+      GOBBLR_PASSWORD: password
+      GOBBLR_USERNAME: app
+      GOBBLR_PATH: /data
+    links:
+      - migration-mysql
+      - mysql
+    command: db sql mysql --run
+
+  migration-mysql: &migration
+    build:
+      context: migrations
+    links:
+      - mysql
+    environment:
+      DB_CONNECTION: app:password@tcp(mysql:3306)/app
+      DB_TYPE: mysql
+    volumes:
+      - ./migrations:/go/app
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_PASSWORD: password
+      MYSQL_USER: app
+    ports:
+      - 4001:3306
+
+  ## PostgreSQL
+  gobblr-pgsql:
+    <<: *gobblr
+    ports:
+      - 3002:5670
+    environment:
+      GOBBLR_DATABASE: app
+      GOBBLR_HOST: pgsql
+      GOBBLR_PASSWORD: password
+      GOBBLR_USERNAME: app
+      GOBBLR_PATH: /data
+    links:
+      - migration-pgsql
+      - pgsql
+    command: db sql pgsql --run
+
+  migration-pgsql:
+    <<: *migration
+    build:
+      context: migrations
+    links:
+      - pgsql
+    environment:
+      DB_CONNECTION: user=app password=password host=pgsql port=5432 dbname=app
+      DB_TYPE: postgres
+
+  pgsql:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: app
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: app
+    ports:
+      - 4002:5432
+
+  ## SQL Service
+  gobblr-sqlserver:
+    <<: *gobblr
+    ports:
+      - 3003:5670
+    environment:
+      GOBBLR_DATABASE: model
+      GOBBLR_HOST: sqlserver
+      GOBBLR_PASSWORD: Pa55w0rd
+      GOBBLR_USERNAME: sa
+      GOBBLR_PATH: /data
+    links:
+      - migration-sqlserver
+      - sqlserver
+    command: db sql sqlserver --run
+
+  migration-sqlserver:
+    <<: *migration
+    build:
+      context: migrations
+    links:
+      - sqlserver
+    environment:
+      DB_CONNECTION: sqlserver://sa:Pa55w0rd@sqlserver:1433?database=model
+      DB_TYPE: sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: Pa55w0rd
+    ports:
+      - 4003:1433
