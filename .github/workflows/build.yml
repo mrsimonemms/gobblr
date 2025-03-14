@@ -1,86 +1,78 @@
 name: Build
 on:
-  - pull_request
-  - push
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 permissions:
   contents: write
   packages: write
+  pull-requests: read
 jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetch-depth is required
+
+      - uses: wagoid/commitlint-github-action@v6
+
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Required for pre-commit to be able scan history
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: '>=1.19.0'
+          go-version-file: go.mod
 
-      - name: Go install
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
         run: go install ./...
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-
-      - name: go-fmt-import
-        uses: Jerome1337/goimports-action@v1.0.2
 
       - name: go-vet
         run: go vet -v ./...
 
-      - name: gofumpt
-        run: |
-          go install mvdan.cc/gofumpt@latest
+      - name: go-test
+        run: go test -v ./...
 
-          LIST_OF_FILES=$(gofumpt -l .)
-          echo "$LIST_OF_FILES"
-          if [ -n "$LIST_OF_FILES" ]; then
-              exit 1
-          fi
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
 
-      - name: go-err-check
-        run: |
-          go install github.com/kisielk/errcheck@latest
-
-          errcheck ./...
-
-      - name: go-static-check
-        uses: dominikh/staticcheck-action@v1.2.0
-        with:
-          install-go: false
+      - uses: pre-commit/action@v3.0.1
 
   build:
     runs-on: ubuntu-latest
     needs:
+      - commitlint
       - test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: '>=1.19.0'
-
-      - run: go version
-
-      - name: Install Go dependencies
-        run: go install ./...
-
-      - name: Lint Go
-        uses: golangci/golangci-lint-action@v3
+          fetch-depth: 0 # Required for goreleaser changelog to work correctly
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -88,7 +80,7 @@ jobs:
 
       - name: Get branch names
         id: branch-name
-        uses: tj-actions/branch-names@v6
+        uses: tj-actions/branch-names@v8
         with:
           strip_tag_prefix: v
 
@@ -104,6 +96,7 @@ jobs:
 
             echo "image_name=${IMG_NAME}" >> "$GITHUB_OUTPUT"
             echo "platforms=linux/amd64,linux/arm64,linux/arm/v7" >> "$GITHUB_OUTPUT"
+            echo "push=true" >> "$GITHUB_OUTPUT"
           else
             # Use branch naming convention
             TAG="branch-${{ steps.branch-name.outputs.current_branch }}"
@@ -114,6 +107,7 @@ jobs:
 
             echo "image_name=ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}" >> "$GITHUB_OUTPUT"
             echo "platforms=linux/amd64" >> "$GITHUB_OUTPUT"
+            echo "push=${{ github.ref == 'refs/heads/main' }}" >> "$GITHUB_OUTPUT"
           fi
 
           if [ "${{ steps.branch-name.outputs.is_tag }}" = "true"  ];
@@ -123,11 +117,12 @@ jobs:
             echo "version=development" >> "$GITHUB_OUTPUT"
           fi
 
+          echo "container_tagged_image=ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "commit_id=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "gitRepo=github.com/${GITHUB_REPOSITORY}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: .
           build-args: |
@@ -135,12 +130,18 @@ jobs:
             GIT_REPO=${{ steps.docker.outputs.gitRepo }}
             VERSION=${{ steps.docker.outputs.version }}
           platforms: ${{ steps.docker.outputs.platforms }}
-          push: ${{ github.ref == 'refs/heads/main' }}
-          tags: ${{ steps.docker.outputs.image_name }}
+          push: ${{ steps.docker.outputs.push }}
+          tags: ${{ steps.docker.outputs.image_name }},${{ steps.docker.outputs.container_tagged_image }}
+
+      - name: Set up Go
+        if: steps.branch-name.outputs.is_tag == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.20.0'
 
       - name: Run GoReleaser
         if: steps.branch-name.outputs.is_tag == 'true'
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
           args: release --clean

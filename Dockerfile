@@ -1,20 +1,42 @@
-FROM golang:1.19 AS builder
+# Copyright 2022 Simon Emms <simon@simonemms.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+FROM golang AS builder
 ARG GIT_COMMIT
-ARG GIT_REPO
+ARG GIT_REPO="github.com/mrsimonemms/gobblr"
+ARG PROJECT_NAME="gobblr"
 ARG VERSION
-WORKDIR /app
-ADD . .
 ENV CGO_ENABLED=0
 ENV GOOS=linux
+ENV GOCACHE=/go/.cache
 ENV PROJECT_NAME="${PROJECT_NAME}"
+USER 1000
+WORKDIR /go/app
+COPY --chown=1000:1000 . .
 RUN go build \
   -ldflags \
   "-w -s -X $GIT_REPO/cmd.Version=$VERSION -X $GIT_REPO/cmd.GitCommit=$GIT_COMMIT" \
-  -o /app/app
-ENTRYPOINT /app/app
+  -o /go/bin/app
+COPY --from=cosmtrek/air /go/bin/air /go/bin/air
+ENTRYPOINT [ "air" ]
 
-FROM alpine
-RUN apk --no-cache add ca-certificates
+FROM scratch
+ARG GIT_COMMIT
+ARG VERSION
+ENV GIT_COMMIT="${GIT_COMMIT}"
+ENV VERSION="${VERSION}"
 WORKDIR /app
-COPY --from=builder /app/app /app
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /go/bin/app /app
 ENTRYPOINT [ "/app/app" ]
