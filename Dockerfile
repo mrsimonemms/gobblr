@@ -28,8 +28,7 @@ RUN go build \
   -ldflags \
   "-w -s -X $GIT_REPO/cmd.Version=$VERSION -X $GIT_REPO/cmd.GitCommit=$GIT_COMMIT" \
   -o /go/bin/app
-COPY --from=cosmtrek/air /go/bin/air /go/bin/air
-ENTRYPOINT [ "air" ]
+ENTRYPOINT [ "/go/bin/app" ]
 
 FROM scratch
 ARG GIT_COMMIT
