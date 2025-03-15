@@ -233,7 +233,7 @@ jobs:
 
       - name: Get branch names
         id: branch-name
-        uses: tj-actions/branch-names@v8
+        uses: mrsimonemms/get-branch-name-action@v1
         with:
           strip_tag_prefix: v
 
