@@ -55,10 +55,163 @@ jobs:
 
       - uses: pre-commit/action@v3.0.1
 
+  e2e-tests-mongodb:
+    runs-on: ubuntu-latest
+    env:
+      GOBBLR_CONNECTION_URI: mongodb://localhost:27017/gobblr
+      GOBBLR_DATABASE: gobblr
+      GOBBLR_PATH: ./examples/simple/data
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - run: go run . db mongodb
+
+  e2e-tests-mysql:
+    runs-on: ubuntu-latest
+    env:
+      GOBBLR_DATABASE: app
+      GOBBLR_HOST: localhost
+      GOBBLR_PASSWORD: password
+      GOBBLR_USERNAME: app
+      GOBBLR_PATH: ./examples/simple/data
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: app
+          MYSQL_RANDOM_ROOT_PASSWORD: "true"
+          MYSQL_PASSWORD: password
+          MYSQL_USER: app
+        ports:
+          - 3306:3306
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: migration
+        working-directory: ./examples/simple/migrations
+        env:
+          DB_CONNECTION: app:password@tcp(localhost:3306)/app
+          DB_TYPE: mysql
+        run: go run .
+
+      - run: go run . db sql mysql
+
+  e2e-tests-pgsql:
+    runs-on: ubuntu-latest
+    env:
+      GOBBLR_DATABASE: app
+      GOBBLR_HOST: localhost
+      GOBBLR_PASSWORD: password
+      GOBBLR_USERNAME: app
+      GOBBLR_PATH: ./examples/simple/data
+    services:
+      pgsql:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: app
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: app
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: migration
+        working-directory: ./examples/simple/migrations
+        env:
+          DB_CONNECTION: user=app password=password host=localhost port=5432 dbname=app
+          DB_TYPE: postgres
+        run: go run .
+
+      - run: go run . db sql postgres
+
+  e2e-tests-sqlite:
+    runs-on: ubuntu-latest
+    env:
+      GOBBLR_FILE: ${{ github.workspace }}/sqlite.db
+      GOBBLR_PATH: ./examples/simple/data
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Create SQLite file
+        run: touch ${GOBBLR_FILE}
+
+      - name: migration
+        working-directory: ./examples/simple/migrations
+        env:
+          DB_CONNECTION: ${{ env.GOBBLR_FILE }}
+          DB_TYPE: sqlite
+        run: go run .
+
+      - run: go run . db sql sqlite
+
+  e2e-tests-sqlserver:
+    runs-on: ubuntu-latest
+    env:
+      GOBBLR_DATABASE: model
+      GOBBLR_HOST: localhost
+      GOBBLR_PASSWORD: Pa55w0rd
+      GOBBLR_USERNAME: sa
+      GOBBLR_PATH: ./examples/simple/data
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Pa55w0rd
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: migration
+        working-directory: ./examples/simple/migrations
+        env:
+          DB_CONNECTION: sqlserver://sa:Pa55w0rd@localhost:1433?database=model
+          DB_TYPE: sqlserver
+        run: go run .
+
+      - run: go run . db sql sqlserver
+
   build:
     runs-on: ubuntu-latest
     needs:
       - commitlint
+      - e2e-tests-mongodb
+      - e2e-tests-mysql
+      - e2e-tests-pgsql
+      - e2e-tests-sqlite
+      - e2e-tests-sqlserver
       - test
     steps:
       - uses: actions/checkout@v4

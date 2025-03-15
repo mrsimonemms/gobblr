@@ -88,7 +88,6 @@ services:
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: app
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
       POSTGRES_PASSWORD: password
       POSTGRES_USER: app
     ports:
