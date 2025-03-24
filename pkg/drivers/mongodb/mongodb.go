@@ -20,9 +20,9 @@ import (
 	"context"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type mongoConnection struct {
@@ -39,9 +39,10 @@ type MongoDB struct {
 func (db *MongoDB) Auth() error {
 	opts := options.Client().
 		ApplyURI(db.connectionURI).
-		SetConnectTimeout(1 * time.Second) // Connection should have a short timeout to fail fast
+		SetTimeout(time.Second).
+		SetConnectTimeout(time.Second) // Connection should have a short timeout to fail fast
 
-	client, err := mongo.Connect(context.TODO(), opts)
+	client, err := mongo.Connect(opts)
 	if err != nil {
 		return err
 	}
