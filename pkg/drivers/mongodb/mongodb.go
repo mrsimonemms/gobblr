@@ -18,6 +18,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -73,10 +74,12 @@ func (db *MongoDB) InsertBulk(collection string, raw []map[string]any) (int, err
 		item := bson.D{}
 
 		for k, v := range row {
-			item = append(item, bson.E{
-				Key:   k,
-				Value: v,
-			})
+			data, err := parseData(k, v)
+			if err != nil {
+				return 0, err
+			}
+
+			item = append(item, data)
 		}
 
 		data = append(data, item)
@@ -104,4 +107,19 @@ func New(connectionURI, database string) *MongoDB {
 		connectionURI: connectionURI,
 		database:      database,
 	}
+}
+
+func parseData(k string, v any) (bson.E, error) {
+	if k == "_id" {
+		id, err := bson.ObjectIDFromHex(v.(string))
+		if err != nil {
+			return bson.E{}, fmt.Errorf("error converting string to _id: %w", err)
+		}
+		v = id
+	}
+
+	return bson.E{
+		Key:   k,
+		Value: v,
+	}, nil
 }
