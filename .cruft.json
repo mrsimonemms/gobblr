@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/mrsimonemms/new",
-  "commit": "817bd6f084d947c2d68a7875b1bb4ea7ca5c6eb4",
+  "commit": "b75b892063ef69dd37d1b48040f2dd2125292b71",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,7 +10,7 @@
       "repo": "github.com/mrsimonemms/gobblr",
       "use_viper": true,
       "_template": "https://github.com/mrsimonemms/new",
-      "_commit": "817bd6f084d947c2d68a7875b1bb4ea7ca5c6eb4"
+      "_commit": "b75b892063ef69dd37d1b48040f2dd2125292b71"
     }
   },
   "directory": "golang-cobra",

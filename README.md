@@ -31,6 +31,7 @@ Make your development databases gobble up known data
   * [Why shouldn't I use my ORM's migration in development?](#why-shouldnt-i-use-my-orms-migration-in-development)
 * [Contributing](#contributing)
   * [Open in a container](#open-in-a-container)
+  * [Commit style](#commit-style)
 
 <!-- Regenerate with "pre-commit run -a markdown-toc" -->
 
@@ -287,3 +288,16 @@ certain that your data is in a known state.
 ### Open in a container
 
 * [Open in a container](https://code.visualstudio.com/docs/devcontainers/containers)
+
+### Commit style
+
+All commits must be done in the [Conventional Commit](https://www.conventionalcommits.org)
+format.
+
+```git
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
